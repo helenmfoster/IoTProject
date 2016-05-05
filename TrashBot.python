@@ -12,19 +12,23 @@
 
 
 class TrashBot:
-    def __init(self, num_adults, num_small_kids, num_big_kids, income, num_rooms, building):
-	self.num_adults = numAdults
+    def __init__(self, num_adults, num_small_kids, num_big_kids, income, num_rooms, building):
+	self.num_adults = num_adults
 	self.num_small_kids = num_small_kids
 	self.num_big_kids = num_big_kids
 	self.income = income
-	self.num_rooms = num_roomsi
+	self.num_rooms = num_rooms
 	self.building = building		
-
+	
     def __str__(self):
-	return "foo"
+	return str(self.trash_average)
+
+    def get_daily_trash(self):
+	trash_factors = [self.num_adults , self.num_small_kids, self.num_big_kids, self.income, self.num_rooms, self.building]
+	self.trash_average = sum(map(lambda x: x* (1.0/6.0), trash_factors))
 
 
+a = TrashBot(1, 0, 0, 1, 3, 0)
+a.get_daily_trash()
 
-
-a = TrashBot()
 print(a)
