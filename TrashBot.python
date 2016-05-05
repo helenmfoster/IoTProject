@@ -1,0 +1,30 @@
+### Params for trashbot
+
+"""
+1. Number of adults: (int)
+2. Number of children under 5: (int))
+3. Number of 5-18: (int)
+4. Income (low, medium, high: (int 0 = low, 1 = medium, 2 = high))
+6. Number of rooms: (int)
+7. Type of building: (int apartment = 0, house = 1)
+
+"""
+
+
+class TrashBot:
+    def __init(self, num_adults, num_small_kids, num_big_kids, income, num_rooms, building):
+	self.num_adults = numAdults
+	self.num_small_kids = num_small_kids
+	self.num_big_kids = num_big_kids
+	self.income = income
+	self.num_rooms = num_roomsi
+	self.building = building		
+
+    def __str__(self):
+	return "foo"
+
+
+
+
+a = TrashBot()
+print(a)
