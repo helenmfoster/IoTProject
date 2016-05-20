@@ -42,7 +42,6 @@ def ParseResponse(response):
     print "distance matrix: "
     print distanceMatrix
 
-
 def GetMatrix(origins, destinations, key):
     HTTPRequest = BuildRequest(origins, destinations, key)
     response = requests.get(HTTPRequest)
@@ -56,5 +55,5 @@ if __name__ == "__main__":
     #    origins = sys.argv[0]
     #    destinations = sys.argv[1]
 
-    APIKey = "AIzaSyDfNjjRUcKkycQ0vcQ1Vh0vJCCLppimCYQ"
+    APIKey = ""
     GetMatrix(origins, destinations, APIKey)
