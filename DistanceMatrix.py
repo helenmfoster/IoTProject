@@ -43,7 +43,6 @@ def ParseResponse(response):
     print "distance matrix: "
     print distanceMatrix
 
-
 def GetMatrix(origins, destinations, key):
     HTTPRequest = BuildRequest(origins, destinations, key)
     response = requests.get(HTTPRequest)
