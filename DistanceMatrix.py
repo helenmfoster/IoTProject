@@ -2,6 +2,7 @@ import requests
 import json
 import sys
 import numpy as np
+import os
 
 def FormatParameters(parameters):
     NewParameters = ""
@@ -56,5 +57,5 @@ if __name__ == "__main__":
     #    origins = sys.argv[0]
     #    destinations = sys.argv[1]
 
-    APIKey = "AIzaSyDfNjjRUcKkycQ0vcQ1Vh0vJCCLppimCYQ"
+    APIKey = os.environ['GMAP_KEY']
     GetMatrix(origins, destinations, APIKey)
