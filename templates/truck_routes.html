@@ -1,29 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+  <head>
+    <title>Truck Routing</title>
 
-<head>
-    <title>IoT Garbage Optimization</title>
+        <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+
+        <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        text-align: center;
+      }
+      #map {
+        height: 90%;
+        width: 90%;
+        display: inline-block;
+      }
+    </style>
+  </head>
+  <body>
+
+        <div class="container">
+            <div class="header">
+                <nav>
+                    <ul class="nav nav-pills pull-right">
+                        <li role="presentation" ><a href="{{ url_for('main') }}">Home</a></li>
+                        <li role="presentation" class="active"><a href="{{ url_for('truck_routes') }}">Truck Routes</a></li>
+                    </ul>
+                </nav>
+                <h3 class="text-muted">Iot Garbage Optimization</h3>
+            </div>
+          </div>
 
 
-    <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
-
-
-</head>
-
-<body>
-  <div class="container">
-      <div class="header">
-          <nav>
-              <ul class="nav nav-pills pull-right">
-                  <li role="presentation" ><a href="{{ url_for('main') }}">Home</a></li>
-                  <li role="presentation" class="active"><a href="{{ url_for('truck_routes') }}">Truck Routes</a></li>
-              </ul>
-          </nav>
-          <h3 class="text-muted">Iot Garbage Optimization</h3>
-      </div>
-
-</body>
-
+    <div id="map"></div>
+    <script>
+      var map;
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: -34.397, lng: 150.644},
+          zoom: 8
+        });
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDfNjjRUcKkycQ0vcQ1Vh0vJCCLppimCYQ&callback=initMap"
+    async defer></script>
+  </body>
 </html>
