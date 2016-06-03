@@ -2,6 +2,7 @@
 
 import numpy as np
 import copy
+import Gap
 
 def tourDist(distMat, tour):
 	d = 0
@@ -85,6 +86,13 @@ class SavingsMethod:
 
 		return self.currentRoutes
 
+class VRPSolver:
+
+	def __init__(self, distMat, inventory, truckCapacity):
+		self.distMat = distMat
+		self.inventory = inventory
+		self.truckCapacity = truckCapacity
+
 		
 class TSPSolver:
 
@@ -162,9 +170,16 @@ class TSPSolver:
 
 			while len(nl) > 0:
 				#this feels hella inefficient, but then again, list comps are fast... time later
-				next = sorted([(i, self.distMat[t[len(t)-1],i]) for i in nl if self.distMat[t[len(t)-1],i] != 0], key=lambda x: x[1])[0]
-				nl.remove(next[0])
-				t.append(next[0])
+				
+				
+				next = sorted([(i, self.distMat[t[len(t)-1],i]) for i in nl if self.distMat[t[len(t)-1],i] != 0], key=lambda x: x[1])
+				
+				if next == []:
+					print 'NearestInsertionError: No Solution Found'
+					continue
+				else:
+					nl.remove(next[0][0])
+					t.append(next[0][0])
 
 			t.append(0)
 			
@@ -215,6 +230,105 @@ class TSPSolver:
 		return bestTour
 
 
+class FisherJaikumar:
+
+
+	def __init__(self, distMat, loads, numRoutes, capacity, reps = 10):
+		self.dm = distMat
+		self.inv = loads
+		self.num_routes = numRoutes
+		self.cap = capacity
+		self.replications = reps
+
+	def stageOne(self, seeds):
+		gapInst = Gap.GeneralizedAssignment(self.dm, self.inv, [self.cap for i in range(len(self.inv))],seeds)
+		return gapInst.solve()
+
+
+	def stageTwo(self, assignments, tsp_solver = 'nearest_2'):
+
+		#move nodes to sub-routes
+		sub_routes = {}
+		for i in range(self.num_routes):
+			sub_routes[str(i)] = []
+		for i in range(len(assignments)):
+			sub_routes[str(assignments[i])].append(i+1)
+
+		sub_tours = {}
+		sub_distances = []
+
+		if tsp_solver == 'nearest_2':
+			for i in range(self.num_routes):
+				sub_routes[str(i)].append(0) #add depot
+				
+				tsp = TSPSolver(self.dm, sub_routes[str(i)])
+				t = tsp.nearestInsertionSolver(randInit=True, reps = self.replications)
+				sub_tours[str(i)] = tsp.twoOpt(t)
+				if sub_tours[str(i)] != []:
+					sub_distances.append(tourDist(self.dm, sub_tours[str(i)]))
+				else:
+					print 'Invalid Tour'
+					return 'TSP Failed', 'TSP Failed'
+		elif tsp_solver == 'nearest':
+			for i in range(self.num_routes):
+				sub_routes[str(i)].append(0) #add depot
+				tsp = TSPSolver(self.dm, sub_routes[str(i)])
+				t = tsp.nearestInsertionSolver(randInit=True, reps = self.replications)
+				sub_tours[str(i)] = t
+				if sub_tours[str(i)] != []:
+					sub_distances.append(tourDist(self.dm, sub_tours[str(i)]))
+				else:
+					print 'Invalid Tour'
+					return 'TSP Failed', 'TSP Failed'
+
+		elif tsp_solver == 'arbitrary_2':
+			for i in range(self.num_routes):
+				sub_routes[str(i)].append(0) #add depot
+				tsp = TSPSolver(self.dm, sub_routes[str(i)])
+				sub_tours[str(i)] = tsp.arbitraryInsertionSolver(self.replications, opt=True)
+				if sub_tours[str(i)] != []:
+					sub_distances.append(tourDist(self.dm, sub_tours[str(i)]))
+				else:
+					print 'Invalid Tour'
+					return 'TSP Failed', 'TSP Failed'
+
+		else: #arbitrary w/o 2-opt improvement
+			for i in range(self.num_routes):
+				sub_routes[str(i)].append(0) #add depot
+				tsp = TSPSolver(self.dm, sub_routes[str(i)])
+				sub_tours[str(i)] = tsp.arbitraryInsertionSolver(self.replications, opt=False)
+				if sub_tours[str(i)] != []:
+					sub_distances.append(tourDist(self.dm, sub_tours[str(i)]))
+				else:
+					print 'Invalid Tour'
+					return 'TSP Failed', 'TSP Failed'
+
+		return sub_tours, sub_distances
+
+	def solve(self, solver='nearest_2'):
+		bestDist = 10000000000
+		bestTours = {}
+		for i in range(self.replications):
+			#first, get random seeds
+			idList = range(1,len(self.inv)+1)
+			np.random.shuffle(idList)
+			assignments = self.stageOne(idList[:self.num_routes])
+			while assignments == 'INFEASIBLE':
+				print 'too few routes, incrementing'
+				self.num_routes += 1
+				idList = range(1,len(self.inv)+1)
+				np.random.shuffle(idList)
+				assignments = self.stageOne(idList[:self.num_routes])
+			t, d = self.stageTwo(assignments, solver)
+			tries = 0
+			while t == 'TSP Failed' and tries < 100:
+				t, d = self.stageTwo(assignments, solver)
+				tries += 1
+			if d != 'TSP Failed' and sum(d) < bestDist:
+				bestDist = sum(d)
+				bestTours = t
+		return bestTours, bestDist
+
 
 
 
@@ -222,23 +336,23 @@ class TSPSolver:
 
 if __name__ == "__main__":
 
-	br17 = [[9999,3,5,48,48,8,8,5,5,3,3,0,3,5,8,8,5],
-			[3,9999,3,48,48,8,8,5,5,0,0,3,0,3,8,8,5],
-			[5,3,9999,72,72,48,48,24,24,3,3,5,3,0,48,48,24],
-			[48,48,74,9999,0,6,6,12,12,48,48,48,48,74,6,6,12],
-			[48,48,74,0,9999,6,6,12,12,48,48,48,48,74,6,6,12],
-			[8,8,50,6,6,9999,0,8,8,8,8,8,8,50,0,0,8],
-			[8,8,50,6,6,0,9999,8,8,8,8,8,8,50,0,0,8],
-			[5,5,26,12,12,8,8,9999,0,5,5,5,5,26,8,8,0],
-			[5,5,26,12,12,8,8,0,9999,5,5,5,5,26,8,8,0],
-			[3,0,3,48,48,8,8,5,5,9999,0,3,0,3,8,8,5],
-			[3,0,3,48,48,8,8,5,5,0,9999,3,0,3,8,8,5],
-			[0,3,5,48,48,8,8,5,5,3,3,9999,3,5,8,8,5],
-			[3,0,3,48,48,8,8,5,5,0,0,3,9999,3,8,8,5],
-			[5,3,0,72,72,48,48,24,24,3,3,5,3,9999,48,48,24],
-			[8,8,50,6,6,0,0,8,8,8,8,8,8,50,9999,0,8],
-			[8,8,50,6,6,0,0,8,8,8,8,8,8,50,0,9999,8],
-			[5,5,26,12,12,8,8,0,0,5,5,5,5,26,8,8,9999]]		
+	br17 = [[9999,3,5,48,48,8,8,5,5,3,3,1,3,5,8,8,5],
+			[3,9999,3,48,48,8,8,5,5,1,1,3,1,3,8,8,5],
+			[5,3,9999,72,72,48,48,24,24,3,3,5,3,1,48,48,24],
+			[48,48,74,9999,1,6,6,12,12,48,48,48,48,74,6,6,12],
+			[48,48,74,1,9999,6,6,12,12,48,48,48,48,74,6,6,12],
+			[8,8,50,6,6,9999,1,8,8,8,8,8,8,50,1,1,8],
+			[8,8,50,6,6,1,9999,8,8,8,8,8,8,50,1,1,8],
+			[5,5,26,12,12,8,8,9999,1,5,5,5,5,26,8,8,1],
+			[5,5,26,12,12,8,8,1,9999,5,5,5,5,26,8,8,1],
+			[3,1,3,48,48,8,8,5,5,9999,1,3,1,3,8,8,5],
+			[3,1,3,48,48,8,8,5,5,1,9999,3,1,3,8,8,5],
+			[1,3,5,48,48,8,8,5,5,3,3,9999,3,5,8,8,5],
+			[3,1,3,48,48,8,8,5,5,1,1,3,9999,3,8,8,5],
+			[5,3,1,72,72,48,48,24,24,3,3,5,3,9999,48,48,24],
+			[8,8,50,6,6,1,1,8,8,8,8,8,8,50,9999,1,8],
+			[8,8,50,6,6,1,1,8,8,8,8,8,8,50,1,9999,8],
+			[5,5,26,12,12,8,8,1,1,5,5,5,5,26,8,8,9999]]		
 
 
 	#dm = np.array([[0,2,3], [1,0,1], [2,3,0]])
@@ -281,4 +395,8 @@ if __name__ == "__main__":
 	print neaSolnImp, tourDist(dm, neaSolnImp) if neaSolnImp != [] else 'None'
 	print neaSolnImp2, tourDist(dm, neaSolnImp2) if neaSolnImp2 != [] else 'None'
 
+	c = FisherJaikumar(dm, inv[1:], 1, 25)
+	fjRoutes, fjDist = c.solve('nearest_2')
+	print fjRoutes
+	print fjDist
 
