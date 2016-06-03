@@ -336,66 +336,75 @@ class FisherJaikumar:
 
 if __name__ == "__main__":
 
-	br17 = [[9999,3,5,48,48,8,8,5,5,3,3,1,3,5,8,8,5],
-			[3,9999,3,48,48,8,8,5,5,1,1,3,1,3,8,8,5],
-			[5,3,9999,72,72,48,48,24,24,3,3,5,3,1,48,48,24],
-			[48,48,74,9999,1,6,6,12,12,48,48,48,48,74,6,6,12],
-			[48,48,74,1,9999,6,6,12,12,48,48,48,48,74,6,6,12],
-			[8,8,50,6,6,9999,1,8,8,8,8,8,8,50,1,1,8],
-			[8,8,50,6,6,1,9999,8,8,8,8,8,8,50,1,1,8],
-			[5,5,26,12,12,8,8,9999,1,5,5,5,5,26,8,8,1],
-			[5,5,26,12,12,8,8,1,9999,5,5,5,5,26,8,8,1],
-			[3,1,3,48,48,8,8,5,5,9999,1,3,1,3,8,8,5],
-			[3,1,3,48,48,8,8,5,5,1,9999,3,1,3,8,8,5],
-			[1,3,5,48,48,8,8,5,5,3,3,9999,3,5,8,8,5],
-			[3,1,3,48,48,8,8,5,5,1,1,3,9999,3,8,8,5],
-			[5,3,1,72,72,48,48,24,24,3,3,5,3,9999,48,48,24],
-			[8,8,50,6,6,1,1,8,8,8,8,8,8,50,9999,1,8],
-			[8,8,50,6,6,1,1,8,8,8,8,8,8,50,1,9999,8],
-			[5,5,26,12,12,8,8,1,1,5,5,5,5,26,8,8,9999]]		
+	# br17 = [[9999,3,5,48,48,8,8,5,5,3,3,1,3,5,8,8,5],
+	# 		[3,9999,3,48,48,8,8,5,5,1,1,3,1,3,8,8,5],
+	# 		[5,3,9999,72,72,48,48,24,24,3,3,5,3,1,48,48,24],
+	# 		[48,48,74,9999,1,6,6,12,12,48,48,48,48,74,6,6,12],
+	# 		[48,48,74,1,9999,6,6,12,12,48,48,48,48,74,6,6,12],
+	# 		[8,8,50,6,6,9999,1,8,8,8,8,8,8,50,1,1,8],
+	# 		[8,8,50,6,6,1,9999,8,8,8,8,8,8,50,1,1,8],
+	# 		[5,5,26,12,12,8,8,9999,1,5,5,5,5,26,8,8,1],
+	# 		[5,5,26,12,12,8,8,1,9999,5,5,5,5,26,8,8,1],
+	# 		[3,1,3,48,48,8,8,5,5,9999,1,3,1,3,8,8,5],
+	# 		[3,1,3,48,48,8,8,5,5,1,9999,3,1,3,8,8,5],
+	# 		[1,3,5,48,48,8,8,5,5,3,3,9999,3,5,8,8,5],
+	# 		[3,1,3,48,48,8,8,5,5,1,1,3,9999,3,8,8,5],
+	# 		[5,3,1,72,72,48,48,24,24,3,3,5,3,9999,48,48,24],
+	# 		[8,8,50,6,6,1,1,8,8,8,8,8,8,50,9999,1,8],
+	# 		[8,8,50,6,6,1,1,8,8,8,8,8,8,50,1,9999,8],
+	# 		[5,5,26,12,12,8,8,1,1,5,5,5,5,26,8,8,9999]]
 
 
-	#dm = np.array([[0,2,3], [1,0,1], [2,3,0]])
-	dm = np.array(br17)
-	#print dm
-	inv = [2, 3, 4, 1, 1, 6, 3, 4, 2, 8, 2, 2, 1, 6, 1, 2, 1]
-	cap = 45
-	a = SavingsMethod(dm, inv, cap)
-	print a.parallelSolver()
+	# #dm = np.array([[0,2,3], [1,0,1], [2,3,0]])
+	# dm = np.array(br17)
+	# #print dm
+	# inv = [2, 3, 4, 1, 1, 6, 3, 4, 2, 8, 2, 2, 1, 6, 1, 2, 1]
+	# cap = 45
+	# a = SavingsMethod(dm, inv, cap)
+	# print a.parallelSolver()
 
-	b = TSPSolver(dm, range(17))
-	arbSoln = b.arbitraryInsertionSolver(10)
-	if arbSoln != []:
-		arbSolnImp = b.twoOpt(arbSoln)
-		arbSolnImp2 = b.twoOpt(arbSolnImp)
-	print 'Arbitrary Insertion:'
-	print arbSoln, tourDist(dm, arbSoln) if arbSoln != [] else 'None'
-	print arbSolnImp, tourDist(dm, arbSolnImp) if arbSolnImp != [] else 'None'
-	print arbSolnImp2, tourDist(dm, arbSolnImp2) if arbSolnImp2 != [] else 'None'
+	# b = TSPSolver(dm, range(17))
+	# arbSoln = b.arbitraryInsertionSolver(10)
+	# if arbSoln != []:
+	# 	arbSolnImp = b.twoOpt(arbSoln)
+	# 	arbSolnImp2 = b.twoOpt(arbSolnImp)
+	# print 'Arbitrary Insertion:'
+	# print arbSoln, tourDist(dm, arbSoln) if arbSoln != [] else 'None'
+	# print arbSolnImp, tourDist(dm, arbSolnImp) if arbSolnImp != [] else 'None'
+	# print arbSolnImp2, tourDist(dm, arbSolnImp2) if arbSolnImp2 != [] else 'None'
 	
-	b = TSPSolver(dm, range(17))
-	arbSoln = b.arbitraryInsertionSolver(10, opt=True)
-	if arbSoln != []:
-		arbSolnImp = b.twoOpt(arbSoln)
-		arbSolnImp2 = b.twoOpt(arbSolnImp)
+	# b = TSPSolver(dm, range(17))
+	# arbSoln = b.arbitraryInsertionSolver(10, opt=True)
+	# if arbSoln != []:
+	# 	arbSolnImp = b.twoOpt(arbSoln)
+	# 	arbSolnImp2 = b.twoOpt(arbSolnImp)
 
-	print 'Arbitrary Insertion w/ 2-Opt:'
-	print arbSoln, tourDist(dm, arbSoln) if arbSoln != [] else 'None'
-	print arbSolnImp, tourDist(dm, arbSolnImp) if arbSolnImp != [] else 'None'
-	print arbSolnImp2, tourDist(dm, arbSolnImp2) if arbSolnImp2 != [] else 'None'
+	# print 'Arbitrary Insertion w/ 2-Opt:'
+	# print arbSoln, tourDist(dm, arbSoln) if arbSoln != [] else 'None'
+	# print arbSolnImp, tourDist(dm, arbSolnImp) if arbSolnImp != [] else 'None'
+	# print arbSolnImp2, tourDist(dm, arbSolnImp2) if arbSolnImp2 != [] else 'None'
 	
 
 
-	b = TSPSolver(dm, range(17))
-	neaSoln = b.nearestInsertionSolver(randInit = False, reps = 20)
-	neaSolnImp = b.twoOpt(neaSoln)
-	neaSolnImp2 = b.twoOpt(neaSolnImp)
-	print 'Nearest Insertion'
-	print neaSoln, tourDist(dm, neaSoln) if neaSoln != [] else 'None'
-	print neaSolnImp, tourDist(dm, neaSolnImp) if neaSolnImp != [] else 'None'
-	print neaSolnImp2, tourDist(dm, neaSolnImp2) if neaSolnImp2 != [] else 'None'
+	# b = TSPSolver(dm, range(17))
+	# neaSoln = b.nearestInsertionSolver(randInit = False, reps = 20)
+	# neaSolnImp = b.twoOpt(neaSoln)
+	# neaSolnImp2 = b.twoOpt(neaSolnImp)
+	# print 'Nearest Insertion'
+	# print neaSoln, tourDist(dm, neaSoln) if neaSoln != [] else 'None'
+	# print neaSolnImp, tourDist(dm, neaSolnImp) if neaSolnImp != [] else 'None'
+	# print neaSolnImp2, tourDist(dm, neaSolnImp2) if neaSolnImp2 != [] else 'None'
 
-	c = FisherJaikumar(dm, inv[1:], 1, 25)
+	size = 400
+
+	dm = np.random.rand(size,size)
+	for i in range(dm.shape[0]):
+		dm[i,i] = 9999
+
+	inv = np.random.rand(size)
+
+
+	c = FisherJaikumar(dm, inv[1:], 3, 50)
 	fjRoutes, fjDist = c.solve('nearest_2')
 	print fjRoutes
 	print fjDist
