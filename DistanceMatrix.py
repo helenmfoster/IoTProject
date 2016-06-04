@@ -1,10 +1,6 @@
-import requests
-import json
 import sys
 import numpy as np
 import os
-import math
-import time
 import csv
 import re
 
@@ -28,10 +24,11 @@ def ClusterData(building_data, minlat, maxlat, minlon, maxlon):
                 aggregate_building_data.append({'id': node_id, 'lat': avg_lat, 'lon': avg_lon, 'height': total_height})
                 node_id += 1
 
-                
-    print aggregate_building_data
-    print len(aggregate_building_data)
-    print
+    with open('aggregate.csv', 'wb') as file:
+       writer = csv.DictWriter(file, fieldnames = ['id', 'lat', 'lon', 'height'])
+       writer.writeheader()
+       for row in aggregate_building_data:
+           writer.writerow(row)
 
 def GetData():
     minlat = 42.048164
