@@ -12,7 +12,7 @@ class GeneralizedAssignment:
 		self.capacities = capArr
 
 		#calculate costs and then remove 0 from distance matrix
-		self.cost_mat = np.zeros((costMat.shape[0]-1, self.num_routes))
+		self.cost_mat = np.zeros((len(loadArr), self.num_routes))
 		for i in range(1, costMat.shape[0]):
 			for j in range(self.num_routes):
 				if i == seeds[j]:

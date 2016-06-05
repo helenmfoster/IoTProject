@@ -92,6 +92,18 @@ class VRPSolver:
 		self.distMat = distMat
 		self.inventory = inventory
 		self.truckCapacity = truckCapacity
+	def savingsMethod(self):
+		a = SavingsMethod(self.distMat, self.inventory,self.truckCapacity)
+		return a.parallelSolver()
+	def improve(self, routes):
+		newRoutes = []
+		a = TSPSolver(self.distMat, [0])
+		for r in routes:
+			newRoutes.append(a.twoOpt(r))
+		return newRoutes
+	def solve(self):
+		initial = self.savingsMethod()
+		return self.improve(initial)
 
 		
 class TSPSolver:
@@ -247,6 +259,8 @@ class FisherJaikumar:
 
 	def stageTwo(self, assignments, tsp_solver = 'nearest_2'):
 
+		print len(assignments)
+
 		#move nodes to sub-routes
 		sub_routes = {}
 		for i in range(self.num_routes):
@@ -330,6 +344,42 @@ class FisherJaikumar:
 		return bestTours, bestDist
 
 
+class TourPartitioning:
+	def __init__(self, distMat, loads, capacity, reps = 10):
+		self.dm = distMat
+		self.inv = loads
+		
+		self.cap = capacity
+		self.replications = reps
+	def solve(self, method = 'nearest_2'):
+		#first solve TSP
+		a = TSPSolver(self.dm, range(len(self.inv)))
+		
+		
+
+		prelimSoln = a.nearestInsertionSolver(randInit=True, reps=1)
+		improvedSoln = a.twoOpt(prelimSoln)
+
+		#remove zeros for partitioning
+		improvedSoln.remove(0)
+		improvedSoln.remove(0)
+
+		#now do partitioning
+		finalRoutes = []
+		currCap = 0
+		currRoute = []
+		for i in range(len(improvedSoln)):
+			if (currCap + self.inv[improvedSoln[i]] < self.cap):
+				currCap += self.inv[improvedSoln[i]]
+				currRoute.append(improvedSoln[i])
+			else:
+				#route complete
+				finalRoutes.append([0] + currRoute + [0])
+				currRoute = []
+				currCap = 0
+		return finalRoutes
+
+
 
 
 
@@ -395,7 +445,7 @@ if __name__ == "__main__":
 	# print neaSolnImp, tourDist(dm, neaSolnImp) if neaSolnImp != [] else 'None'
 	# print neaSolnImp2, tourDist(dm, neaSolnImp2) if neaSolnImp2 != [] else 'None'
 
-	size = 400
+	size = 1000
 
 	dm = np.random.rand(size,size)
 	for i in range(dm.shape[0]):
@@ -404,7 +454,7 @@ if __name__ == "__main__":
 	inv = np.random.rand(size)
 
 
-	c = FisherJaikumar(dm, inv[1:], 3, 50)
+	c = FisherJaikumar(dm, inv[1:], 10, 75)
 	fjRoutes, fjDist = c.solve('nearest_2')
 	print fjRoutes
 	print fjDist
