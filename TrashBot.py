@@ -13,7 +13,7 @@ import time
 
 class TrashBot:
 	#Constants
-	CENTER = (1.3/3) #1.3/5 mean, divided by 3 floors
+	CENTER = (1.45/3) #1.4/5 mean, divided by 3 floors
 	CENTER = CENTER / 2.5 #1.16 cubic feet, compression ratio of 2.5
 	FLR_MULT = 1
 	def __init__(self, sensor_id, num_floors, num_buildings):
@@ -21,7 +21,7 @@ class TrashBot:
 		self.scale_factor = num_floors
 		self.buildings = num_buildings
 
-		self.mean = max(0.01, np.random.normal(self.CENTER * self.FLR_MULT * self.scale_factor, 0.1))
+		self.mean = max(0.2, np.random.normal(self.CENTER * self.FLR_MULT * self.scale_factor, 0.2))
 		#print self.mean
 
 		self.current_fill = 0

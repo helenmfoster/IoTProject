@@ -45,7 +45,7 @@ evanston.setDistMat(d)
 
 
 #print sum(evanston.simulate1Week())
-#print len(evanston.simulateWorstWeek())
+#print sum(evanston.simulateWorstWeek())
 
 #each dumpster is 1.6 y^3, with compression ratio 2.5 => .52
 #each truck is 30 cubic yards
@@ -67,33 +67,153 @@ TRUCK_CAPACITY = 290
 
 #########
 
-#Run savings method experiment:
-# resultsDist = []
-# resultsNumRoutes = []
-# for jj in range(50):
-# 	evanston.reset()
-# 	heights = evanston.simulate1Week()
-# 	c = SavingsMethod(evanston.getDistMat(), np.append([0], heights), 290)
-# 	soln = c.parallelSolver()
-# 	resultsNumRoutes.append(len(soln))
-# 	resultsDist.append(sum([tourDist(evanston.getDistMat(), i) for i in soln]))
-# 	print jj, 'th replication completed'
+def writeSimResults(filename, num_routes, route_dist, worst_routes, worst_dist):
+	with open(filename, 'wb') as file:
+		writer = csv.writer(file, delimiter = ',')
+		writer.writerow(['num_routes', 'route_dist', 'worst_routes', 'worst_dist'])
+		for i in range(len(num_routes)):
+			writer.writerow([num_routes[i], route_dist[i], worst_routes[i], worst_dist[i]])
+
+########
 
 
-# print resultsDist
-# print resultsNumRoutes
-
-#########
-heights = evanston.simulate1Week()
-#a = TSPSolver(evanston.getDistMat(), range(len(heights)))
-#prelimRes =  a.nearestInsertionSolver(randInit=True, reps=1)
-#print tourDist(evanston.getDistMat(), prelimRes)
-#improvedRes = a.twoOpt(prelimRes)
-#print tourDist(evanston.getDistMat(), improvedRes)
-
-a = TourPartitioning(evanston.getDistMat(), heights, TRUCK_CAPACITY, reps = 1)
-s = a.solve()
-print s
-print sum([tourDist(evanston.getDistMat(), i) for i in s])
+########
+#Savings Method
+########
 
 
+resultsDist = []
+resultsNumRoutes = []
+baselineDist = []
+baselineRoutes = []
+for jj in range(30):
+	evanston.reset()
+	heights = evanston.simulate1Week()
+	c = SavingsMethod(evanston.getDistMat(), np.append([0], heights), TRUCK_CAPACITY)
+	soln = c.parallelSolver()
+	resultsNumRoutes.append(len(soln))
+	resultsDist.append(sum([tourDist(evanston.getDistMat(), i) for i in soln]))
+
+	evanston.reset()
+	heights = evanston.simulateWorstWeek()
+	c = SavingsMethod(evanston.getDistMat(), np.append([0], heights), TRUCK_CAPACITY)
+	soln = c.parallelSolver()
+	baselineRoutes.append(len(soln))
+	baselineDist.append(sum([tourDist(evanston.getDistMat(), i) for i in soln]))
+
+	print jj, 'th SAVINGS replication completed'
+
+writeSimResults('savingsMethod.csv', resultsNumRoutes, resultsDist, baselineRoutes, baselineDist)
+
+########
+#Tour Paritioning with Arbitrary Insertion
+########
+
+
+resultsDist = []
+resultsNumRoutes = []
+baselineDist = []
+baselineRoutes = []
+for jj in range(30):
+	evanston.reset()
+	heights = evanston.simulate1Week()
+	c = TourPartitioning(evanston.getDistMat(), np.append([0], heights), TRUCK_CAPACITY, reps = 50)
+	soln = c.solve('arbitrary')
+	resultsNumRoutes.append(len(soln))
+	resultsDist.append(sum([tourDist(evanston.getDistMat(), i) for i in soln]))
+
+	evanston.reset()
+	heights = evanston.simulateWorstWeek()
+	c = TourPartitioning(evanston.getDistMat(), np.append([0], heights), TRUCK_CAPACITY, reps = 50)
+	soln = c.solve('arbitrary')
+	baselineRoutes.append(len(soln))
+	baselineDist.append(sum([tourDist(evanston.getDistMat(), i) for i in soln]))
+
+	print jj, 'th ARBITRARY replication completed'
+
+writeSimResults('arbitraryMethod.csv', resultsNumRoutes, resultsDist, baselineRoutes, baselineDist)
+
+
+########
+#Tour Paritioning with Arbitrary Insertion (2-opt)
+########
+
+
+resultsDist = []
+resultsNumRoutes = []
+baselineDist = []
+baselineRoutes = []
+for jj in range(30):
+	evanston.reset()
+	heights = evanston.simulate1Week()
+	c = TourPartitioning(evanston.getDistMat(), np.append([0], heights), TRUCK_CAPACITY, reps = 10)
+	soln = c.solve('arbitrary_2')
+	resultsNumRoutes.append(len(soln))
+	resultsDist.append(sum([tourDist(evanston.getDistMat(), i) for i in soln]))
+
+	evanston.reset()
+	heights = evanston.simulateWorstWeek()
+	c = TourPartitioning(evanston.getDistMat(), np.append([0], heights), TRUCK_CAPACITY, reps = 10)
+	soln = c.solve('arbitrary_2')
+	baselineRoutes.append(len(soln))
+	baselineDist.append(sum([tourDist(evanston.getDistMat(), i) for i in soln]))
+
+	print jj, 'th ARBITRARY-2 replication completed'
+
+writeSimResults('arbitrary2Method.csv', resultsNumRoutes, resultsDist, baselineRoutes, baselineDist)
+
+########
+#Tour Paritioning with Nearest Insertion
+########
+
+
+resultsDist = []
+resultsNumRoutes = []
+baselineDist = []
+baselineRoutes = []
+for jj in range(30):
+	evanston.reset()
+	heights = evanston.simulate1Week()
+	c = TourPartitioning(evanston.getDistMat(), np.append([0], heights), TRUCK_CAPACITY, reps = 5)
+	soln = c.solve('nearest')
+	resultsNumRoutes.append(len(soln))
+	resultsDist.append(sum([tourDist(evanston.getDistMat(), i) for i in soln]))
+
+	evanston.reset()
+	heights = evanston.simulateWorstWeek()
+	c = TourPartitioning(evanston.getDistMat(), np.append([0], heights), TRUCK_CAPACITY, reps = 5)
+	soln = c.solve('nearest')
+	baselineRoutes.append(len(soln))
+	baselineDist.append(sum([tourDist(evanston.getDistMat(), i) for i in soln]))
+
+	print jj, 'th NEAREST replication completed'
+
+writeSimResults('nearestMethod.csv', resultsNumRoutes, resultsDist, baselineRoutes, baselineDist)
+
+########
+#Tour Paritioning with Nearest Insertion (2-opt)
+########
+
+
+resultsDist = []
+resultsNumRoutes = []
+baselineDist = []
+baselineRoutes = []
+for jj in range(30):
+	evanston.reset()
+	heights = evanston.simulate1Week()
+	c = TourPartitioning(evanston.getDistMat(), np.append([0], heights), TRUCK_CAPACITY, reps = 2)
+	soln = c.solve('nearest_2')
+	resultsNumRoutes.append(len(soln))
+	resultsDist.append(sum([tourDist(evanston.getDistMat(), i) for i in soln]))
+
+	evanston.reset()
+	heights = evanston.simulateWorstWeek()
+	c = TourPartitioning(evanston.getDistMat(), np.append([0], heights), TRUCK_CAPACITY, reps = 2)
+	soln = c.solve('nearest_2')
+	baselineRoutes.append(len(soln))
+	baselineDist.append(sum([tourDist(evanston.getDistMat(), i) for i in soln]))
+
+	print jj, 'th NEAREST-2 replication completed'
+
+writeSimResults('nearest2Method.csv', resultsNumRoutes, resultsDist, baselineRoutes, baselineDist)

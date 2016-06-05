@@ -355,10 +355,15 @@ class TourPartitioning:
 		#first solve TSP
 		a = TSPSolver(self.dm, range(len(self.inv)))
 		
-		
-
-		prelimSoln = a.nearestInsertionSolver(randInit=True, reps=1)
-		improvedSoln = a.twoOpt(prelimSoln)
+		if method == 'arbitrary':
+			improvedSoln = a.arbitraryInsertionSolver(self.replications, opt=False)
+		elif method == 'nearest':
+			improvedSoln = a.nearestInsertionSolver(randInit=True, reps=1)
+		elif method == 'arbitrary_2':
+			improvedSoln = a.arbitraryInsertionSolver(self.replications, opt=True)
+		else: #nearest_2
+			prelimSoln = a.nearestInsertionSolver(randInit=True, reps=1)
+			improvedSoln = a.twoOpt(prelimSoln)
 
 		#remove zeros for partitioning
 		improvedSoln.remove(0)
