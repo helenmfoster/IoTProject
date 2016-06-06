@@ -100,15 +100,12 @@ def nearest2Method(evanston):
 def get_routes():
 	"""Function to be called by app"""
 	city, coords = loadData()
-	routes = nearest2Method(city)
-	print(routes)
-	return routes
+	return nearestMethod(city)
 
 def main():
 	#this function happens when we execute the simulation at runtime
 	city, coords = loadData()
-	routes = nearest2Method(city) #this gives us the routes
-	print routes
+	routes = nearestMethod(city) #this gives us the routes
 	#we can then use the routes and the lat/lon coordinates to draw the routes, probably
 
 

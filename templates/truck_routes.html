@@ -26,14 +26,13 @@
       }
       html, body {
         height: 100%;
-        margin: 0;
-        padding: 0;
       }
       #map {
         height: 100%;
         float: left;
         width: 70%;
         height: 100%;
+        margin-left: 20px;
       }
       #right-panel {
         margin: 20px;
@@ -48,6 +47,9 @@
         background-color: #FFEE77;
         padding: 10px;
       }
+
+
+
     </style>
   </head>
   <body>
@@ -77,6 +79,7 @@
     </div>
     <div id="directions-panel"></div>
     </div>
+  </div>
 
 
 
@@ -142,7 +145,7 @@
           origin: depot.position,
           destination: depot.position,
           waypoints: waypts,
-          optimizeWaypoints: true,
+          optimizeWaypoints: false,
           travelMode: google.maps.TravelMode.DRIVING
         }, function(response, status) {
           if (status === google.maps.DirectionsStatus.OK) {
