@@ -86,8 +86,8 @@ def nearestMethod(evanston):
 	evanston.reset()
 	heights = evanston.simulate1Week()
 	c = TourPartitioning(evanston.getDistMat(), np.append([0], heights), TRUCK_CAPACITY, reps = 5)
-	soln = c.solve('nearest')
-	return soln #this is a list of routes, each route is alist of node ids in the order they are traversed
+	soln, heights = c.solve('nearest')
+	return soln, heights #this is a list of routes, each route is alist of node ids in the order they are traversed
 
 def nearest2Method(evanston):
 	evanston.reset()
@@ -100,10 +100,13 @@ def nearest2Method(evanston):
 def get_routes():
 	"""Function to be called by app"""
 	city, coords = loadData()
-	return nearestMethod(city)
+	routes, efficiencies = nearestMethod(city)
+	return routes
 
-def get_heights():
-	return evanston.simulate1Week()
+def get_route_efficiency():
+	city, coords = loadData()
+	routes, efficiencies = nearestMethod(city)
+	return efficiencies
 
 def main():
 	#this function happens when we execute the simulation at runtime
@@ -113,4 +116,4 @@ def main():
 
 
 if __name__ == '__main__':
-	main()
+	get_route_efficiency()

@@ -371,6 +371,7 @@ class TourPartitioning:
 
 		#now do partitioning
 		finalRoutes = []
+		finalCaps = []
 		currCap = 0
 		currRoute = []
 		for i in range(len(improvedSoln)):
@@ -380,9 +381,10 @@ class TourPartitioning:
 			else:
 				#route complete
 				finalRoutes.append([0] + currRoute + [0])
+				finalCaps.append(currCap)
 				currRoute = []
 				currCap = 0
-		return finalRoutes
+		return finalRoutes, finalCaps
 
 
 
