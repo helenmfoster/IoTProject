@@ -7,6 +7,16 @@
     <meta charset="utf-8">
     <title>Truck Routes</title>
     <style>
+      html, body {
+        height: 100%;
+      }
+      body {
+        padding: 20px;
+      }
+      #map {
+        height: 100%;
+        margin-right: 400px;
+      }
       #right-panel {
         font-family: 'Roboto','sans-serif';
         line-height: 30px;
@@ -24,29 +34,24 @@
       #right-panel i {
         font-size: 12px;
       }
-      html, body {
-        height: 100%;
-      }
-      #map {
-        height: 100%;
-        float: left;
-        width: 70%;
-        height: 100%;
-        margin-left: 20px;
-      }
       #right-panel {
-        margin: 20px;
-        border-width: 2px;
-        width: 20%;
-        float: left;
-        text-align: left;
-        padding-top: 20px;
+        height: 100%;
+        float: right;
+        width: 390px;
+        overflow: auto;
       }
-      #directions-panel {
-        margin-top: 20px;
-        background-color: #FFEE77;
-        padding: 10px;
+      #right-panel td {
+        padding: 5px;
       }
+      #select_truck {
+        text-align: center;
+        margin-top: -50px;
+        padding: 20px;
+      }
+      #select_truck .form-control {
+        width: auto!important;
+        display: inline-block!important;
+      } 
 
 
 
@@ -65,22 +70,19 @@
             <h3 class="text-muted">Iot Garbage Optimization</h3>
         </div>
     </div>
+    <div id="select_truck">
+        <h3>Select truck to view route</h3>
+        <div class="form-group">
+            <select class="form-control" id="truck_option">
+                {% for x in trucks %}
+                    <option value= {{loop.index}} >Truck {{loop.index}}</option>
+                {% endfor %}
+            </select>
+            <input class="btn btn-primary" type="submit" id="submit">
+        </div>
+    </div>
+    <div id="right-panel"></div>
     <div id="map"></div>
-    <div id="right-panel">
-    <div>
-    <b>Truck Number:</b>
-    <select id="truck_option">
-      {% for x in trucks %}
-        <option value= {{loop.index}} >Truck {{loop.index}}</option>
-      {% endfor %}
-    </select>
-    <br>
-    <br>
-      <input type="submit" id="submit">
-    </div>
-    <div id="directions-panel"></div>
-    </div>
-  </div>
 
 
 
@@ -96,6 +98,7 @@
         });
 
         directionsDisplay.setMap(map);
+        directionsDisplay.setPanel(document.getElementById('right-panel'));
 
         document.getElementById('submit').addEventListener('click', function() {
           calculateAndDisplayRoute(directionsService, directionsDisplay);
@@ -129,7 +132,7 @@
         }
 
         var waypts = [];
-        for (var i = 0; i < markerArray.length; i++) {
+        for (var i = 0; i < Math.min(markerArray.length, 8); i++) {
           waypts.push({
 
            location: markerArray[i].position,
@@ -152,17 +155,6 @@
           if (status === google.maps.DirectionsStatus.OK) {
             directionsDisplay.setDirections(response);
             var route = response.routes[0];
-            var summaryPanel = document.getElementById('directions-panel');
-            summaryPanel.innerHTML = '';
-            // For each route, display summary information.
-            for (var i = 0; i < route.legs.length; i++) {
-              var routeSegment = i + 1;
-              summaryPanel.innerHTML += '<b>Route Segment: ' + routeSegment +
-                  '</b><br>';
-              summaryPanel.innerHTML += route.legs[i].start_address + ' to ';
-              summaryPanel.innerHTML += route.legs[i].end_address + '<br>';
-              summaryPanel.innerHTML += route.legs[i].distance.text + '<br><br>';
-            }
           } else {
             window.alert('Directions request failed due to ' + status);
           }

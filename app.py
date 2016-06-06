@@ -28,9 +28,7 @@ def truck_routes():
             for node in r:
                 cur.execute("SELECT * FROM nodes WHERE id = ?", (node,));
                 result = cur.fetchall()
-                if len(nodes) < 8:
-                    nodes.append([result[0][1], result[0][2]])
-            print len(nodes)
+                nodes.append([result[0][1], result[0][2]])
             trucks.append(nodes)
 
 
