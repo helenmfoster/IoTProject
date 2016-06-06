@@ -2,39 +2,51 @@
 <html>
   <head>
     <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
-
-
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <title>Truck Routes</title>
     <style>
+      #right-panel {
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+      }
+
+      #right-panel select, #right-panel input {
+        font-size: 15px;
+      }
+
+      #right-panel select {
+        width: 100%;
+      }
+
+      #right-panel i {
+        font-size: 12px;
+      }
       html, body {
         height: 100%;
         margin: 0;
         padding: 0;
       }
       #map {
-        height: 90%;
+        height: 100%;
+        float: left;
+        width: 70%;
+        height: 100%;
       }
-      #floating-panel {
-        position: absolute;
-        top: 10px;
-        left: 25%;
-        z-index: 5;
-        background-color: #fff;
-        padding: 5px;
-        border: 1px solid #999;
-        text-align: center;
-        font-family: 'Roboto','sans-serif';
-        line-height: 30px;
-        padding-left: 10px;
+      #right-panel {
+        margin: 20px;
+        border-width: 2px;
+        width: 20%;
+        float: left;
+        text-align: left;
+        padding-top: 20px;
       }
-      #warnings-panel {
-        width: 100%;
-        height:10%;
-        text-align: center;
+      #directions-panel {
+        margin-top: 20px;
+        background-color: #FFEE77;
+        padding: 10px;
       }
     </style>
   </head>
@@ -51,121 +63,81 @@
         </div>
     </div>
     <div id="map"></div>
-    &nbsp;
-    <div id="warnings-panel"></div>
+    <div id="right-panel">
+    <div>
+    <b>Truck Number:</b>
+    <select id="start">
+      {% for x in trucks %}
+        <option value= {{loop.index}} >Truck {{loop.index}}</option>
+      {% endfor %}
+    </select>
+    <br>
+    <br>
+      <input type="submit" id="submit">
+    </div>
+    <div id="directions-panel"></div>
+    </div>
+
+
+
+
+
     <script>
       function initMap() {
-        var marker1 = new google.maps.Marker({
-          position: new google.maps.LatLng(42.0445, -87.6870),
-          map: map
-         });
-
-         var marker2 = new google.maps.Marker({
-           position: new google.maps.LatLng(42.0440, -87.6879),
-           map: map
-          });
-
-          var marker3 = new google.maps.Marker({
-            position: new google.maps.LatLng(42.0400, -87.6850),
-            map: map
-           });
-
-           var marker4 = new google.maps.Marker({
-             position: new google.maps.LatLng(42.0006, -87.6850),
-             map: map
-            });
-
-            var marker5 = new google.maps.Marker({
-              position: new google.maps.LatLng(42.0500, -87.6900),
-              map: map
-             });
-
-        var markerArray = [marker1, marker2, marker3, marker4, marker5];
-
-        // Instantiate a directions service.
         var directionsService = new google.maps.DirectionsService;
-
-        // Create a map and center it on Manhattan.
+        var directionsDisplay = new google.maps.DirectionsRenderer;
         var map = new google.maps.Map(document.getElementById('map'), {
           zoom: 13,
           center: {lat: 42.0451, lng: -87.6877}
         });
+        directionsDisplay.setMap(map);
 
-        // Create a renderer for directions and bind it to the map.
-        var directionsDisplay = new google.maps.DirectionsRenderer({map: map});
-
-        // Instantiate an info window to hold step text.
-        var stepDisplay = new google.maps.InfoWindow;
-
-        // Display the route between the initial start and end selections.
-        calculateAndDisplayRoute(
-            directionsDisplay, directionsService, markerArray, stepDisplay, map);
-        // Listen to change events from the start and end lists.
+        document.getElementById('submit').addEventListener('click', function() {
+          calculateAndDisplayRoute(directionsService, directionsDisplay);
+        });
       }
 
-      function calculateAndDisplayRoute(directionsDisplay, directionsService,
-          markerArray, stepDisplay, map) {
-        // First, remove any existing markers from the map.
-        for (var i = 0; i < markerArray.length; i++) {
-          markerArray[i].setMap(null);
+      function calculateAndDisplayRoute(directionsService, directionsDisplay) {
+        var waypts = [];
+        var checkboxArray = document.getElementById('waypoints');
+        for (var i = 0; i < checkboxArray.length; i++) {
+          if (checkboxArray.options[i].selected) {
+            waypts.push({
+              location: checkboxArray[i].value,
+              stopover: true
+            });
+          }
         }
 
-        var waypts = [];
-        for (var i = 0; i < markerArray.length; i++) {
-          waypts.push({
-
-           location: markerArray[i].position,
-           stopover: true
-         });
-         }
-
-        // Retrieve the start and end locations and create a DirectionsRequest using
-        // WALKING directions.
         directionsService.route({
-          origin: markerArray[0].position,
-          destination: markerArray[3].position,
+          origin: document.getElementById('start').value,
+          destination: document.getElementById('end').value,
           waypoints: waypts,
           optimizeWaypoints: true,
           travelMode: google.maps.TravelMode.DRIVING
         }, function(response, status) {
-          // Route the directions and pass the response to a function to create
-          // markers for each step.
           if (status === google.maps.DirectionsStatus.OK) {
-            document.getElementById('warnings-panel').innerHTML =
-                '<b>' + response.routes[0].warnings + '</b>';
             directionsDisplay.setDirections(response);
             var route = response.routes[0];
-          //  showSteps(response, markerArray, stepDisplay, map);
+            var summaryPanel = document.getElementById('directions-panel');
+            summaryPanel.innerHTML = '';
+            // For each route, display summary information.
+            for (var i = 0; i < route.legs.length; i++) {
+              var routeSegment = i + 1;
+              summaryPanel.innerHTML += '<b>Route Segment: ' + routeSegment +
+                  '</b><br>';
+              summaryPanel.innerHTML += route.legs[i].start_address + ' to ';
+              summaryPanel.innerHTML += route.legs[i].end_address + '<br>';
+              summaryPanel.innerHTML += route.legs[i].distance.text + '<br><br>';
+            }
           } else {
             window.alert('Directions request failed due to ' + status);
           }
         });
       }
-
-      function showSteps(directionResult, markerArray, stepDisplay, map) {
-        // For each step, place a marker, and add the text to the marker's infowindow.
-        // Also attach the marker to an array so we can keep track of it and remove it
-        // when calculating new routes.
-        var myRoute = directionResult.routes[0].legs[0];
-        for (var i = 0; i < myRoute.steps.length; i++) {
-          var marker = markerArray[i] = markerArray[i] || new google.maps.Marker;
-          marker.setMap(map);
-          marker.setPosition(myRoute.steps[i].start_location);
-          attachInstructionText(
-              stepDisplay, marker, myRoute.steps[i].instructions, map);
-        }
-      }
-
-      function attachInstructionText(stepDisplay, marker, text, map) {
-        google.maps.event.addListener(marker, 'click', function() {
-          // Open an info window when the marker is clicked on, containing the text
-          // of the step.
-          stepDisplay.setContent(text);
-          stepDisplay.open(map, marker);
-        });
-      }
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDfNjjRUcKkycQ0vcQ1Vh0vJCCLppimCYQ&callback=initMap"
-    async defer></script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDfNjjRUcKkycQ0vcQ1Vh0vJCCLppimCYQ&callback=initMap">
+    </script>
   </body>
 </html>
