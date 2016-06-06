@@ -102,6 +102,9 @@ def get_routes():
 	city, coords = loadData()
 	return nearestMethod(city)
 
+def get_heights():
+	return evanston.simulate1Week()
+
 def main():
 	#this function happens when we execute the simulation at runtime
 	city, coords = loadData()

@@ -8,6 +8,11 @@ app = Flask(__name__)
 def main():
     return render_template('index.html')
 
+@app.route('/analytics')
+def truck_analytics():
+    return render_template('truck_analytics.html')
+
+
 @app.route('/truck_routes')
 def truck_routes():
     routes = TruckRouter.get_routes()
