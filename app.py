@@ -12,7 +12,8 @@ def truck_routes():
     ##routes = TruckRouter.get_routes()
     ## Code Goes Here for turning routes into an array of arrays of tuples:
     ##  a series of [lat, long]
-    trucks = [[(42.0006, -87.6850), (42.0500, -87.6900)], [(82.0445, -87.6870), (42.0006, -87.6850), (42.0500, -87.6900)]]
+    ## look at trash_nodes.db
+    trucks = [[[42.0000, -87.6800], [42.0509, -87.6909]], [[42.0509, -87.6909], [42.0509, -87.6910], [42.0509, -87.6911]]]
 
 
     return render_template('truck_routes.html', trucks = trucks)

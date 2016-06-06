@@ -66,7 +66,7 @@
     <div id="right-panel">
     <div>
     <b>Truck Number:</b>
-    <select id="start">
+    <select id="truck_option">
       {% for x in trucks %}
         <option value= {{loop.index}} >Truck {{loop.index}}</option>
       {% endfor %}
@@ -90,6 +90,7 @@
           zoom: 13,
           center: {lat: 42.0451, lng: -87.6877}
         });
+
         directionsDisplay.setMap(map);
 
         document.getElementById('submit').addEventListener('click', function() {
@@ -97,21 +98,49 @@
         });
       }
 
-      function calculateAndDisplayRoute(directionsService, directionsDisplay) {
-        var waypts = [];
-        var checkboxArray = document.getElementById('waypoints');
-        for (var i = 0; i < checkboxArray.length; i++) {
-          if (checkboxArray.options[i].selected) {
-            waypts.push({
-              location: checkboxArray[i].value,
-              stopover: true
-            });
-          }
+
+      function make_markers(truck_id){
+        markerArray = [];
+        trucks = {{ trucks }}
+        truck = trucks[truck_id];
+        console.log(truck);
+        for (var i = 0; i < truck.length; i++){
+          lat = truck[i][0];
+          long = truck[i][1];
+            markerArray.push(new google.maps.Marker({
+              position: new google.maps.LatLng(lat, long),
+              map: map
+            }));
         }
 
+        console.log(markerArray);
+        return markerArray;
+      }
+
+      function calculateAndDisplayRoute(directionsService, directionsDisplay) {
+        // First, remove any existing markers from the map.
+        markerArray = make_markers((document.getElementById('truck_option').value)-1)
+        for (var i = 0; i < markerArray.length; i++) {
+          markerArray[i].setMap(null);
+        }
+
+        var waypts = [];
+        for (var i = 0; i < markerArray.length; i++) {
+          waypts.push({
+
+           location: markerArray[i].position,
+           stopover: true
+         });
+         }
+
+         var depot = new google.maps.Marker({
+           position: new google.maps.LatLng(42.056732, -87.687349),
+           map: map
+          });
+
         directionsService.route({
-          origin: document.getElementById('start').value,
-          destination: document.getElementById('end').value,
+          origin: depot.position,
+          destination: depot.position,
           waypoints: waypts,
           optimizeWaypoints: true,
           travelMode: google.maps.TravelMode.DRIVING
