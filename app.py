@@ -10,7 +10,8 @@ def main():
 
 @app.route('/analytics')
 def truck_analytics():
-    return render_template('truck_analytics.html')
+    route_efficiences = TruckRouter.get_route_efficiency()
+    return render_template('truck_analytics.html', e = route_efficiences)
 
 
 @app.route('/truck_routes')
@@ -44,5 +45,6 @@ def truck_routes():
 
 
 if __name__ == '__main__':
-  app.run()
-  ##truck_routes()
+  ##app.run()
+  #truck_analytics()
+  truck_routes()

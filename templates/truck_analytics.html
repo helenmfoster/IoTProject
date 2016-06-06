@@ -4,6 +4,46 @@
     <title>IoT Garbage Collection Optimization</title>
     <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
+
+    <!--Load the AJAX API-->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+
+      // Load the Visualization API and the corechart package.
+      google.charts.load('current', {'packages':['corechart']});
+
+      // Set a callback to run when the Google Visualization API is loaded.
+      google.charts.setOnLoadCallback(drawChart);
+
+      // Callback that creates and populates a data table,
+      // instantiates the pie chart, passes in the data and
+      // draws it.
+      function drawChart() {
+        e = {{e}}
+        graph_data = [];
+        graph_data.push(['Route', 'Trash Level', 'Remaining Capactiy', { role: 'style' },  { role: 'annotation' } ]);
+        for (var i = 0; i < e.length; i ++){
+          a = e[i];
+          b = 290-e[i]
+          c = (a*100/290).toString().substring(0,5)+'%'
+          graph_data.push(['Route '+i.toString(), a, b, 'color: #e5e4e2', c]);
+        }
+         var data = google.visualization.arrayToDataTable(graph_data);
+
+         var options = {
+           width: 1250,
+           height: 1500,
+           title: "Truck Encumbrance",
+           bar: { groupWidth: '20%' },
+           legend: { position: "none" },
+           isStacked: true
+         };
+
+        // Instantiate and draw our chart, passing in some options.
+        var chart = new google.visualization.BarChart(document.getElementById("barchart_values"));
+       chart.draw(data, options);
+      }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -18,4 +58,8 @@
             <h3 class="text-muted">Iot Garbage Optimization</h3>
         </div>
     </div>
+
+
+        <!--Div that will hold the pie chart-->
+      <center><div id="barchart_values"></div></center>
 </body>
