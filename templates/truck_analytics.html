@@ -6,7 +6,9 @@
     <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
 
     <style>
-
+      #title {
+        margin-top: -10px;
+      }
     </style>
 
     <!--Load the AJAX API-->
@@ -37,9 +39,9 @@
          var options = {
            width: 1250,
            height: 1500,
-           title: "Truck Encumbrance",
+           // title: "Truck Encumbrance",
            bar: { groupWidth: '20%' },
-           chartArea: {'height': '95%'},
+           chartArea: {'height': '97%'},
            legend: { position: "none" },
            isStacked: true
          };
@@ -66,5 +68,8 @@
 
 
         <!--Div that will hold the pie chart-->
-      <center><div id="barchart_values"></div></center>
+        <center>
+          <h3 id="title">Truck Encumbrance</h3>
+          <div id="barchart_values"></div>
+        </center>
 </body>
