@@ -100,7 +100,8 @@ def nearest2Method(evanston):
 def get_routes():
 	"""Function to be called by app"""
 	city, coords = loadData()
-	return nearestMethod(city)
+	routes, efficiencies = nearestMethod(city)
+	return routes
 
 def get_route_efficiency():
 	city, coords = loadData()

@@ -26,6 +26,7 @@ def truck_routes():
         cur = con.cursor()
         for r in routes:
             nodes = []
+
             for node in r:
                 cur.execute("SELECT * FROM nodes WHERE id = ?", (node,));
                 result = cur.fetchall()
@@ -40,11 +41,10 @@ def truck_routes():
     #test data
     #trucks = [[[42.0000, -87.6800], [42.0509, -87.6909]], [[42.0509, -87.6909], [42.0509, -87.6910], [42.0509, -87.6911]]]
 
-
     return render_template('truck_routes.html', trucks = trucks)
 
 
 if __name__ == '__main__':
-  ##app.run()
+  app.run()
   #truck_analytics()
-  truck_routes()
+  #truck_routes()
