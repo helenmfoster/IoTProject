@@ -5,7 +5,9 @@ This file contains the stuff we need to do at run time and some quick notes on h
 """
 
 
-
+from Routing import *
+from TrashBot import *
+import csv
 
 
 #each dumpster is 1.6 y^3, with compression ratio 2.5 => .52
@@ -78,29 +80,35 @@ def arbitrary2Method(evanston):
 	heights = evanston.simulate1Week()
 	c = TourPartitioning(evanston.getDistMat(), np.append([0], heights), TRUCK_CAPACITY, reps = 50)
 	soln = c.solve('arbitrary_2')
-	return soln #this is a list of routes, each route is alist of node ids in the order they are traversed		
+	return soln #this is a list of routes, each route is alist of node ids in the order they are traversed
 
 def nearestMethod(evanston):
 	evanston.reset()
 	heights = evanston.simulate1Week()
 	c = TourPartitioning(evanston.getDistMat(), np.append([0], heights), TRUCK_CAPACITY, reps = 5)
 	soln = c.solve('nearest')
-	return soln #this is a list of routes, each route is alist of node ids in the order they are traversed		
+	return soln #this is a list of routes, each route is alist of node ids in the order they are traversed
 
 def nearest2Method(evanston):
 	evanston.reset()
 	heights = evanston.simulate1Week()
 	c = TourPartitioning(evanston.getDistMat(), np.append([0], heights), TRUCK_CAPACITY, reps = 2)
-	soln = c.solve('nearest_2')	
+	soln = c.solve('nearest_2')
 	return soln #this is a list of routes, each route is alist of node ids in the order they are traversed
 
 
-
+def get_routes():
+	"""Function to be called by app"""
+	city, coords = loadData()
+	routes = nearest2Method(city)
+	print(routes)
+	return routes
 
 def main():
 	#this function happens when we execute the simulation at runtime
 	city, coords = loadData()
 	routes = nearest2Method(city) #this gives us the routes
+	print routes
 	#we can then use the routes and the lat/lon coordinates to draw the routes, probably
 
 

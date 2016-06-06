@@ -2,7 +2,7 @@
 
 import numpy as np
 import copy
-import Gap
+#import Gap
 
 def tourDist(distMat, tour):
 	d = 0
@@ -15,7 +15,7 @@ def tourDist(distMat, tour):
 
 class SavingsMethod:
 	"""
-	This class implements the Clark and Wright SAVINGS ALGORITHM (1964). 
+	This class implements the Clark and Wright SAVINGS ALGORITHM (1964).
 
 	It provides heuristic solutions to the VRP, works well when the number of vechiles is not known ahead of time, and can handle both directed and undirected graphs.
 
@@ -39,7 +39,7 @@ class SavingsMethod:
 		self.distMat = distMat
 		self.inventory = inventory
 		self.truckCapacity = truckCapacity
-		
+
 		#Calculate Savings
 		savingsMat = np.zeros(distMat.shape)
 		for i in range(len(inventory)):
@@ -48,7 +48,7 @@ class SavingsMethod:
 					savingsMat[i,j] = self.distMat[i,0] + self.distMat[0,j] - self.distMat[i,j]
 		savingsList = [(x, y, savingsMat[x,y]) for x in range(1, len(inventory)) for y in range(1, len(inventory)) if x != y]
 		self.savings = sorted(savingsList, key=lambda x: x[2], reverse=True)
-		
+
 		self.currentRoutes = [[0, i, 0] for i in range(len(inventory)) if i != 0]
 
 	def tourCap(self, tour):
@@ -105,7 +105,7 @@ class VRPSolver:
 		initial = self.savingsMethod()
 		return self.improve(initial)
 
-		
+
 class TSPSolver:
 
 	def __init__(self, distMat, nodeList):
@@ -116,12 +116,12 @@ class TSPSolver:
 		self.tour = []
 
 	def arbitraryInsertionSolver(self, reps, opt=False):
-		
+
 		def arbitraryInstance():
 			#pick random starting node other than 0
 			nl = copy.deepcopy(self.nodeList)
 			nl.remove(0)
-			
+
 			#build tour
 			t = []
 			t.append(0)
@@ -164,7 +164,7 @@ class TSPSolver:
 		return bestTour
 
 	def nearestInsertionSolver(self, randInit=False, reps=1):
-		
+
 		bestTour = []
 		bestDist = -1
 
@@ -182,10 +182,10 @@ class TSPSolver:
 
 			while len(nl) > 0:
 				#this feels hella inefficient, but then again, list comps are fast... time later
-				
-				
+
+
 				next = sorted([(i, self.distMat[t[len(t)-1],i]) for i in nl if self.distMat[t[len(t)-1],i] != 0], key=lambda x: x[1])
-				
+
 				if next == []:
 					print 'NearestInsertionError: No Solution Found'
 					continue
@@ -194,7 +194,7 @@ class TSPSolver:
 					t.append(next[0][0])
 
 			t.append(0)
-			
+
 			d = tourDist(self.distMat, t)
 
 			if bestDist == -1 or d < bestDist:
@@ -228,7 +228,7 @@ class TSPSolver:
 				mid = route[i:k][::-1]
 				end = route[k:]
 				return start + mid + end
-		
+
 		bestTour = route
 		bestDist = tourDist(self.distMat, route)
 		for i in range(1, len(self.tour)-4):
@@ -274,7 +274,7 @@ class FisherJaikumar:
 		if tsp_solver == 'nearest_2':
 			for i in range(self.num_routes):
 				sub_routes[str(i)].append(0) #add depot
-				
+
 				tsp = TSPSolver(self.dm, sub_routes[str(i)])
 				t = tsp.nearestInsertionSolver(randInit=True, reps = self.replications)
 				sub_tours[str(i)] = tsp.twoOpt(t)
@@ -348,13 +348,13 @@ class TourPartitioning:
 	def __init__(self, distMat, loads, capacity, reps = 10):
 		self.dm = distMat
 		self.inv = loads
-		
+
 		self.cap = capacity
 		self.replications = reps
 	def solve(self, method = 'nearest_2'):
 		#first solve TSP
 		a = TSPSolver(self.dm, range(len(self.inv)))
-		
+
 		if method == 'arbitrary':
 			improvedSoln = a.arbitraryInsertionSolver(self.replications, opt=False)
 		elif method == 'nearest':
@@ -427,7 +427,7 @@ if __name__ == "__main__":
 	# print arbSoln, tourDist(dm, arbSoln) if arbSoln != [] else 'None'
 	# print arbSolnImp, tourDist(dm, arbSolnImp) if arbSolnImp != [] else 'None'
 	# print arbSolnImp2, tourDist(dm, arbSolnImp2) if arbSolnImp2 != [] else 'None'
-	
+
 	# b = TSPSolver(dm, range(17))
 	# arbSoln = b.arbitraryInsertionSolver(10, opt=True)
 	# if arbSoln != []:
@@ -438,7 +438,7 @@ if __name__ == "__main__":
 	# print arbSoln, tourDist(dm, arbSoln) if arbSoln != [] else 'None'
 	# print arbSolnImp, tourDist(dm, arbSolnImp) if arbSolnImp != [] else 'None'
 	# print arbSolnImp2, tourDist(dm, arbSolnImp2) if arbSolnImp2 != [] else 'None'
-	
+
 
 
 	# b = TSPSolver(dm, range(17))
@@ -463,4 +463,3 @@ if __name__ == "__main__":
 	fjRoutes, fjDist = c.solve('nearest_2')
 	print fjRoutes
 	print fjDist
-
