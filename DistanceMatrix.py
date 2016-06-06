@@ -3,6 +3,8 @@ import numpy as np
 import os
 import csv
 import re
+import sqlite3 as sql
+
 
 def ClusterData(building_data, minlat, maxlat, minlon, maxlon):
     num_clusters = 22
@@ -24,11 +26,21 @@ def ClusterData(building_data, minlat, maxlat, minlon, maxlon):
                 aggregate_building_data.append({'id': node_id, 'lat': avg_lat, 'lon': avg_lon, 'height': total_height})
                 node_id += 1
 
-    with open('aggregate.csv', 'wb') as file:
-       writer = csv.DictWriter(file, fieldnames = ['id', 'lat', 'lon', 'height'])
-       writer.writeheader()
-       for row in aggregate_building_data:
-           writer.writerow(row)
+    con = sql.connect('trash_nodes.db')
+    with con:
+        #cur = con.cursor()
+        #cur.execute("CREATE TABLE nodes(id INTEGER, lat REAL, lon REAL, height REAL)")
+        con.row_factory = sql.Row
+        cur = con.cursor()
+        for entry in aggregate_building_data:
+            cur.execute("INSERT INTO nodes VALUES(?, ?, ?, ?)", (entry['id'], entry['lat'], entry['lon'], entry['height']))
+
+
+        cur.execute("SELECT * FROM nodes")
+        rows = cur.fetchall()
+        for row in rows:
+            print row
+        con.commit()
 
 def GetData():
     minlat = 42.048164
