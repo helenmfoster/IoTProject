@@ -5,8 +5,8 @@ This file contains the stuff we need to do at run time and some quick notes on h
 """
 
 
-from Routing import *
-from TrashBot import *
+from routing import *
+from trashBot import *
 import csv
 
 
